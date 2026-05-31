@@ -2,6 +2,8 @@ import { Injectable, signal } from '@angular/core';
 import {User, Message} from '../message/IMessage';
 import {WebSocketService} from './web-socket';
 import {StateService} from './state-service';
+import {inject} from "@angular/core";
+import { Subscription } from 'rxjs';
 
 
 export interface ApiResponse {
@@ -17,17 +19,16 @@ const BASE_URL = "http://webp-ilv-backend.cs.technikum-wien.at/messenger";
 })
 
 export class ApiService {
+  private webSocketService = inject(WebSocketService);
+  private stateService = inject(StateService);
 
-  constructor(private webSocketService: WebSocketService,
-              private stateService: StateService
-  ) { }
   readonly username = signal<string>('');
   readonly isLoggedIn = signal<boolean>(false);
 
   private token: string | null = null;
   private userId: string | null = null;
   private cachedUsers: User[] = [];
-  private wsSub: any = null;
+  private wsSub: Subscription|null = null;
 
   getUserId(): string|null {
     return this.userId;
@@ -69,8 +70,7 @@ export class ApiService {
       return data;
 
     } catch (err) {
-      console.error("Login error:", err);
-      return { success: false, error: 'Login fehlgeschlagen' };
+      return { success: false, error: err instanceof Error ? err.message : String(err) };
     }
   }
 
@@ -105,7 +105,6 @@ export class ApiService {
       const response = await fetch(`${BASE_URL}/get_conversation.php?${params}`);
       return await response.json();
     } catch (err) {
-      console.error("Loading conversation error:", err);
       return { error: "Error getting conversation: " + err };
     }
   }
@@ -140,7 +139,7 @@ export class ApiService {
       if (data.error) return { success: false, error: data.error };
       return { success: true };
     } catch (e) {
-      return { success: false, error: 'Network error' };
+      return { success: false, error: e instanceof Error ? e.message : String(e) };
     }
   }
 }
