@@ -5,6 +5,7 @@ import { ApiService} from '../../services/api';
 import {LocalStorage} from '../../services/local-storage';
 import {StateService} from '../../services/state-service';
 import {Subscription} from 'rxjs';
+import { inject } from '@angular/core';
 
 @Component({
   selector: 'app-message-list',
@@ -22,9 +23,12 @@ export class MessageListComponent implements OnInit, OnDestroy {
   readonly otherContacts = signal<User[]|null|undefined>([]);
   newMessage = '';
   private sub: Subscription|null = null;
+  public api =  inject(ApiService);
+  private localStorage=  inject(LocalStorage);
+  private stateService=  inject(StateService);
 
-  constructor(public api: ApiService, private localStorage: LocalStorage, private stateService: StateService) {
-    effect(() => {
+  constructor() {
+    effect(():void => {
       const pendingId = this.stateService.pendingOpenUserId();
       if (!pendingId) return;
       const all = this.contacts();
@@ -37,7 +41,7 @@ export class MessageListComponent implements OnInit, OnDestroy {
     });
   }
 
-  async ngOnInit() {
+  async ngOnInit(): Promise<void> {
     this.isLoading.set(true);
     await this.api.getUsers().then(
       result =>
@@ -65,11 +69,11 @@ export class MessageListComponent implements OnInit, OnDestroy {
     this.isLoading.set(false);
   }
 
-  ngOnDestroy() {
+  ngOnDestroy():void {
     this.sub?.unsubscribe();
   }
 
-  async loadConversation(user : User) {
+  async loadConversation(user : User): Promise<void> {
     this.localStorage.addKnownContact(user.id);
     this.stateService.activeConversationsUserId.set(user.id);
     this.isLoading.set(true);
@@ -82,7 +86,7 @@ export class MessageListComponent implements OnInit, OnDestroy {
     this.scrollToBottom();
   }
 
-  async sendMessage(){
+  async sendMessage(): Promise<void> {
     const user = this.selectedUser();
     if(!user || !this.newMessage.trim()){
       return;
@@ -95,7 +99,7 @@ export class MessageListComponent implements OnInit, OnDestroy {
     }
   }
 
-  scrollToBottom() {
+  scrollToBottom() :void{
     setTimeout(() => {
       const container = document.getElementById('messageContainer');
       if (container) container.scrollTop = container.scrollHeight;
