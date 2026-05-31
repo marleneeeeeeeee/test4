@@ -22,7 +22,7 @@ export class LoginComponent implements OnInit {
   private router = inject(Router);
 
 
-  async ngOnInit() {
+  async ngOnInit():Promise<void> {
     const saved = this.localStorage.loadCredentials();
     if(!saved) {
       return;
@@ -33,7 +33,7 @@ export class LoginComponent implements OnInit {
     await this.onLogin();
   }
 
-  async onLogin() {
+  async onLogin(): Promise<void> {
     const result : ApiResponse = await this.apiService.loginUser(this.username, this.password);
     if(!result.success) {
       this.error.set(result.error ?? 'Unable to login');
