@@ -12,10 +12,10 @@ import {LocalStorage} from '../../services/local-storage';
 })
 
 export class LoginComponent implements OnInit {
-  username : string = '';
-  password : string = '';
+  username= '';
+  password = '';
   error = signal('');
-  remember:boolean = false;
+  remember= false;
 
   constructor(private apiService: ApiService,
               private router: Router,
