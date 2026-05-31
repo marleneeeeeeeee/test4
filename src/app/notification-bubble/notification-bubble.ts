@@ -2,6 +2,7 @@ import {Component, OnDestroy, OnInit, signal} from '@angular/core';
 import {Router} from '@angular/router';
 import {Subscription} from 'rxjs';
 import {IncomingMessage, StateService} from '../services/state-service';
+import {inject} from '@angular/core';
 
 @Component({
   selector: 'app-notification-bubble',
@@ -13,11 +14,12 @@ export class NotificationBubble implements OnInit, OnDestroy {
   visible = signal(false);
   currentMessage = signal<IncomingMessage | null>(null);
   private sub: Subscription | null = null;
-  private hideTimer: any = null;
+  private hideTimer:  ReturnType<typeof setTimeout> | null = null;
+  private stateService = inject(StateService);
+  private router = inject(Router);
 
-  constructor(private stateService: StateService, private router: Router) {}
 
-  ngOnInit() {
+  ngOnInit() : void {
     this.sub = this.stateService.newMessages$.subscribe(msg => {
       if (this.stateService.activeConversationsUserId() === msg.sender_id) {
         return;
@@ -26,14 +28,14 @@ export class NotificationBubble implements OnInit, OnDestroy {
     });
   }
 
-  showBubble(msg: IncomingMessage) {
+  showBubble(msg: IncomingMessage):void{
     this.currentMessage.set(msg);
     this.visible.set(true);
     if (this.hideTimer) clearTimeout(this.hideTimer);
     this.hideTimer = setTimeout(() => this.visible.set(false), 6000);
   }
 
-  openChat() {
+  openChat() :void{
     const msg = this.currentMessage();
     if (!msg) return;
     this.stateService.pendingOpenUserId.set(msg.sender_id);
@@ -41,11 +43,11 @@ export class NotificationBubble implements OnInit, OnDestroy {
     this.visible.set(false);
   }
 
-  close() {
+  close() :void {
     this.visible.set(false);
   }
 
-  ngOnDestroy() {
+  ngOnDestroy():void {
     this.sub?.unsubscribe();
   }
 }
