@@ -5,7 +5,7 @@ import { Injectable } from '@angular/core';
 })
 export class LocalStorage {
 
-  saveCredentials (username: string, password: string) {
+  saveCredentials (username: string, password: string):void {
     localStorage.setItem('username', username);
     localStorage.setItem('password', password);
   }
@@ -19,11 +19,11 @@ export class LocalStorage {
     return null;
   }
 
-  clearCredentials () {
+  clearCredentials ():void {
     localStorage.clear();
   }
 
-  addKnownContact (userId : string) {
+  addKnownContact (userId : string) :void{
     const known = this.getKnownContactIds();
     if(known.includes(userId)) {
       return;

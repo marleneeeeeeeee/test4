@@ -18,7 +18,7 @@ export class StateService {
   public newMessages$ = this.newMessageSubject.asObservable();
   activeConversationsUserId = signal<string|null>(null);
   pendingOpenUserId = signal<string|null>(null);
-  notifyNewMessage(message: IncomingMessage) {
+  notifyNewMessage(message: IncomingMessage) :void{
     this.newMessageSubject.next(message);
   }
 }
