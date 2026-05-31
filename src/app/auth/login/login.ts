@@ -3,6 +3,7 @@ import {FormsModule} from '@angular/forms';
 import { Router } from '@angular/router';
 import {ApiResponse, ApiService} from '../../services/api';
 import {LocalStorage} from '../../services/local-storage';
+import { inject } from '@angular/core';
 
 @Component({
   selector: 'app-login',
@@ -16,11 +17,10 @@ export class LoginComponent implements OnInit {
   password = '';
   error = signal('');
   remember= false;
+  private apiService = inject(ApiService);
+  private localStorage = inject(LocalStorage);
+  private router = inject(Router);
 
-  constructor(private apiService: ApiService,
-              private router: Router,
-              private localStorage: LocalStorage
-  ) {}
 
   async ngOnInit() {
     const saved = this.localStorage.loadCredentials();
