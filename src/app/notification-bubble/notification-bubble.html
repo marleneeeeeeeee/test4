@@ -1,0 +1,7 @@
+@if (visible()) {
+  <div class="notification-bubble" (click)="openChat()">
+    <button class="close-btn" (click)="close(); $event.stopPropagation()">✕</button>
+    <strong>{{ currentMessage()?.senderName ?? 'Neue Nachricht' }}</strong>
+    <p>{{ currentMessage()?.message ?? 'Du hast eine neue Nachricht bekommen' }}</p>
+  </div>
+}

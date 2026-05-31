@@ -1,0 +1,51 @@
+<div class="chat-app">
+  <div class="user-list">
+    @if (knownContacts()){
+      @if (knownContacts()!.length > 0) {
+        <div>Known Contacts</div>
+        @for (user of knownContacts(); track user.id) {
+          <div class="user-item"
+               [class.active]="selectedUser()?.id === user.id"
+               (click)="loadConversation(user)">
+            {{ user.name }}
+          </div>
+        }
+        <div>Other Contacts</div>
+      }
+    }
+    @for (user of otherContacts(); track user.id) {
+      <div class="user-item"
+           [class.active]="selectedUser()?.id === user.id"
+           (click)="loadConversation(user)">
+        {{ user.name }}
+      </div>
+    }
+  </div>
+
+  <div class="chat-window">
+    <div class="chat-header">
+      @if (selectedUser()) {
+        {{ selectedUser()!.name }}
+        <button (click)="loadConversation(selectedUser()!)">Refresh</button>}
+      @else { Choose a contact }
+    </div>
+
+    <div class="chat-messages" id="messageContainer">
+      @if (isLoading()) { <div>Loading...</div> }
+      @if (errorMessage()) { <div>{{ errorMessage() }}</div> }
+
+      @for (msg of messages(); track $index) {
+        <div class="chat-message" [class.sent]="msg.sender_id === api.getUserId()" [class.received]="msg.sender_id !== api.getUserId()">
+          <span class="bubble-text">{{ msg.message }}</span>
+          <span class="bubble-time">{{ msg.timestamp }}</span>
+        </div>
+      }
+    </div>
+
+    <div class="chat-input-row">
+      <input type="text" [(ngModel)]="newMessage" placeholder="Write message" />
+      <button class="btn" (click)="sendMessage()">Send</button>
+    </div>
+  </div>
+
+</div>
